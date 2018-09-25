@@ -15,8 +15,7 @@ class CommentController extends Controller
     public function index()
     {
         $comments = Comment::all();
-        $nested_comments = Comment::all()->where('parent_id', '!=', null);
-        return view('comments/home', ['comments' => $comments, 'nested_comments' => $nested_comments]);
+        return view('comments/home', ['comments' => $comments]);
     }
 
     /**

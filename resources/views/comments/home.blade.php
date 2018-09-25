@@ -57,29 +57,7 @@
                         </div>
                     </div>
                 </div>
-                @foreach ($nested_comments as $nested_comment)
-                    @if($nested_comment->parent_id == $comment->id)
-                        <ul class="nested-comments">
-                            <li>
-                                <div class="row">
-                                    <div class="col-sm-5">
-                                        <div class="card" style="width: 100%;">
-                                            <div class="card-body">
-                                                <p class="card-title">
-                                                    <img class="img-responsive user-photo" src="https://ssl.gstatic.com/accounts/ui/avatar_2x.png"
-                                                         style="width: 44px; height: 44px" alt="user">
-                                                    <strong>{{ $nested_comment->user }}</strong>
-                                                    <span class="text-muted">{{ $nested_comment->updated_at }}</span>
-                                                </p>
-                                                <p class="card-text"> {{ $nested_comment->message }}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    @endif
-                @endforeach
+
                 <form id="submitComment" method="post" action="{{ route('comment.store') }}">
                     {{ csrf_field() }}
                     <input type="hidden" name="parent_id" value="{{ $comment->id }}">
@@ -91,11 +69,8 @@
                     <button type="submit" name="commentSubmit" class="btn btn-primary">Comment</button>
                 </form>
                 <br>
-
             @endif
-
         @endforeach
-
         @else
         <form id="submitComment" method="post" action="{{ route('comment.store') }}">
             {{ csrf_field() }}
