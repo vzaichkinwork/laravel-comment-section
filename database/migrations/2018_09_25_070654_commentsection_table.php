@@ -15,6 +15,7 @@ class CommentsectionTable extends Migration
     {
         Schema::create('comment', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('parent_id');
             $table->char('user');
             $table->text('message');
             $table->timestamps();

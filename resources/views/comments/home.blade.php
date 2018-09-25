@@ -6,9 +6,6 @@
 
     <title>Comments</title>
 
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet" type="text/css">
-
     <!--bootstrap cdn -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
@@ -30,28 +27,7 @@
                             </span></em></p>
     </div>
 
-    @foreach ($comments as $comment)
-        <div class="row">
-            <div class="col-sm-1">
-                <div class="thumbnail">
-                    <img class="img-responsive user-photo" src="https://ssl.gstatic.com/accounts/ui/avatar_2x.png"
-                         style="width: 44px; height: 44px" alt="user">
-                </div>
-            </div>
-
-            <div class="col-sm-5">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <strong>{{ $comment->user }}</strong> <span class="text-muted">{{ $comment->updated_at }}</span>
-                    </div>
-                    <div class="panel-body">
-                        {{ $comment->message }}
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endforeach
-
+    {{-- alert if empty message sent--}}
     @if ($errors->any())
         <div class="alert alert-danger">
             <ul>
@@ -62,15 +38,76 @@
         </div>
     @endif
 
-    <form id="comments_section" method="post" action="{{ route('comment.store') }}">
-        {{ csrf_field() }}
-        <input type="hidden" name="user" value="Anonymous">
-        <input type="hidden" name="date" value="{{ date('Y-m-d H:i:s') }}">
-        <div class="form-group">
-            <textarea class="form-control" name="message" rows="3"></textarea>
-        </div>
-        <button type="submit" name="commentSubmit" class="btn btn-primary">Comment</button>
-    </form>
+    {{-- check if table is not empty--}}
+    @if($comments->count())
+        @foreach ($comments as $comment)
+            @if($comment->parent_id == null)
+                <div class="row">
+                    <div class="col-sm-5">
+                        <div class="card" style="width: 100%;">
+                            <div class="card-body">
+                                <p class="card-title">
+                                    <img class="img-responsive user-photo" src="https://ssl.gstatic.com/accounts/ui/avatar_2x.png"
+                                         style="width: 44px; height: 44px" alt="user">
+                                    <strong>{{ $comment->user }}</strong>
+                                    <span class="text-muted">{{ $comment->updated_at }}</span>
+                                </p>
+                                <p class="card-text"> {{ $comment->message }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @foreach ($nested_comments as $nested_comment)
+                    @if($nested_comment->parent_id == $comment->id)
+                        <ul class="nested-comments">
+                            <li>
+                                <div class="row">
+                                    <div class="col-sm-5">
+                                        <div class="card" style="width: 100%;">
+                                            <div class="card-body">
+                                                <p class="card-title">
+                                                    <img class="img-responsive user-photo" src="https://ssl.gstatic.com/accounts/ui/avatar_2x.png"
+                                                         style="width: 44px; height: 44px" alt="user">
+                                                    <strong>{{ $nested_comment->user }}</strong>
+                                                    <span class="text-muted">{{ $nested_comment->updated_at }}</span>
+                                                </p>
+                                                <p class="card-text"> {{ $nested_comment->message }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    @endif
+                @endforeach
+                <form id="submitComment" method="post" action="{{ route('comment.store') }}">
+                    {{ csrf_field() }}
+                    <input type="hidden" name="parent_id" value="{{ $comment->id }}">
+                    <input type="hidden" name="user" value="Anonymous">
+                    <input type="hidden" name="date" value="{{ date('Y-m-d H:i:s') }}">
+                    <div class="form-group">
+                        <textarea class="form-control" name="message" rows="3"></textarea>
+                    </div>
+                    <button type="submit" name="commentSubmit" class="btn btn-primary">Comment</button>
+                </form>
+                <br>
+
+            @endif
+
+        @endforeach
+
+        @else
+        <form id="submitComment" method="post" action="{{ route('comment.store') }}">
+            {{ csrf_field() }}
+            <input type="hidden" name="user" value="Anonymous">
+            <input type="hidden" name="date" value="{{ date('Y-m-d H:i:s') }}">
+            <div class="form-group">
+                <textarea class="form-control" name="message" rows="3"></textarea>
+            </div>
+            <button type="submit" name="commentSubmit" class="btn btn-primary">Comment</button>
+        </form>
+        <br>
+        @endif
 
 </div>
 </body>

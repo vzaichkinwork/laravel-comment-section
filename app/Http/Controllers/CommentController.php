@@ -15,7 +15,8 @@ class CommentController extends Controller
     public function index()
     {
         $comments = Comment::all();
-        return view('comments/home', ['comments' => $comments]);
+        $nested_comments = Comment::all()->where('parent_id', '!=', null);
+        return view('comments/home', ['comments' => $comments, 'nested_comments' => $nested_comments]);
     }
 
     /**
@@ -42,9 +43,11 @@ class CommentController extends Controller
 
         $comment = new Comment();
 
+        $commentParentId = $request->parent_id;
         $commentUser = $request->user;
         $commentMessage = $request->message;
 
+        $comment->parent_id = $commentParentId;
         $comment->user = $commentUser;
         $comment->message = $commentMessage;
 
