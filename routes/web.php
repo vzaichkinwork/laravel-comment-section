@@ -19,4 +19,6 @@ Route::get('/', function() {
     return view('comments/home');
 });
 
+Route::get('/', 'CommentController@index')->name('home');
+
 Route::resource('comment', 'CommentController');
